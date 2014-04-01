@@ -39,139 +39,201 @@ var ViewGrid = Backbone.View.extend({
 var Grid = Backbone.Collection.extend({
   model : Tile,
 
+  cells : [],
+
+  initialize : function(){
+
+    // Init of cells array
+
+    for (var i = 1 ; i <= size ; i++ ){
+      for(var j = 1 ; j <= size ; j++){
+        this.cells.push({x : i , y : j });
+      }
+    }
+  },
+
+  spawn : function(){
+    // Find available cells to spawn a new tile
+    var occupiedCells = [];
+    this.each(function(tile){
+      occupiedCells.push( {x : tile.get('x'), y : tile.get('y')} );
+    });
+    var availableCells = _.filter(this.cells, function(obj){ return !_.findWhere(occupiedCells, obj); });
+    // Pick a random cell from available cells
+    if (availableCells.length > 0){
+      var coordinates = availableCells[Math.floor(Math.random() * (availableCells.length))];
+      this.add( new Tile({ x : coordinates.x , y : coordinates.y }));
+      console.log('Remaining cells  :',availableCells.length);
+    }
+  },
 
   moveUp : function(){
     var self = this;
 
-    // Sort Tiles
+    // Sort Tiles in ...
 
     this.chain().
     sortBy(function(tile){
-     return tile.get('x');
+     return tile.get('x'); // ... Ascending order for x
     }).
     sortBy(function(tile){
-      return tile.get('y');
+      return tile.get('y'); // ... Ascending order for y
     }).
     each(function(tile){
 
-      var furthestTile = self.chain().filter(function(othertile){
-        return (othertile.get('x') == tile.get('x')) && (othertile.get('y') < tile.get('y') )
+      var neighborTile = self.chain().filter(function(neighbor){
+        return (neighbor.get('x') == tile.get('x')) && (neighbor.get('y') < tile.get('y') ) // Tiles in the same column that have a lower y than the current tile
       });
 
-      if (furthestTile.value().length == 0 ){
-        tile.set('y',1);
-        console.log("ca existe")
+      if (neighborTile.value().length == 0 ){ // There is no neighbor tiles
+        tile.set('y',1); // Move the tile to the extremity
       }
-      else{
-        var max = furthestTile.max(function(tile){
-          return tile.get('y');
-        }).value().get('y');
-         tile.set('y',max + 1);
+      else{ // There are neighbor(s)
+        var nearestNeighbor = neighborTile.max(function(tile){ return tile.get('y') }).value();
+        if ( nearestNeighbor.get('value') == tile.get('value') ){
+           // Here we make the fusion between the two Tiles
+          nearestNeighbor.set('value',nearestNeighbor.get('value') * 2);
+          tile.destroy();
 
+          // Then we update the score ...
+
+        }
+        else {
+          tile.set('y',nearestNeighbor.get('y') + 1); // Move the tile as close as possible
+        }
       }
 
     });
+    this.spawn();
 
   },
 
   moveDown : function(){
     var self = this;
 
-    // Sort Tiles
+    // Sort Tiles in ...
 
     this.chain().
     sortBy(function(tile){
-     return tile.get('x');
+     return tile.get('x'); // ... Ascending order for x
     }).
     sortBy(function(tile){
-      return size - tile.get('y');
+      return size - tile.get('y'); // ... Descending order for y
     }).
     each(function(tile){
 
-      var furthestTile = self.chain().filter(function(othertile){
-        return (othertile.get('x') == tile.get('x')) && (othertile.get('y') > tile.get('y') )
+      var neighborTile = self.chain().filter(function(neighbor){
+        return (neighbor.get('x') == tile.get('x')) && (neighbor.get('y') > tile.get('y') ) // Tiles in the same column that have a higher y than the current tile
       });
 
-      if (furthestTile.value().length == 0 ){
-        tile.set('y',4);
+      if (neighborTile.value().length == 0 ){ // There is no neighbor tiles
+        tile.set('y',size); // Move the tile to the extremity
       }
-      else{
-        var min = furthestTile.min(function(tile){
-          return tile.get('y');
-        }).value().get('y');
-         tile.set('y',min - 1);
+      else{ // There are neighbor(s)
+        var nearestNeighbor = neighborTile.min(function(tile){ return tile.get('y') }).value();
+        if ( nearestNeighbor.get('value') == tile.get('value') ){
+           // Here we make the fusion between the two Tiles
+          nearestNeighbor.set('value',nearestNeighbor.get('value') * 2);
+          tile.destroy();
+
+          // Then we update the score ...
+
+        }
+        else {
+          tile.set('y',nearestNeighbor.get('y') - 1); // Move the tile as close as possible
+
+        }
 
       }
 
     });
+    self.spawn();
 
   },
 
   moveRight : function(){
     var self = this;
 
-    // Sort Tiles
+    // Sort Tiles in ...
 
-    this.chain(). // Descending order for x
+    this.chain().
     sortBy(function(tile){
-     return size - tile.get('x');
+     return size - tile.get('x'); // ... Descending order for x
     }).
     sortBy(function(tile){
-      return tile.get('y');
+      return tile.get('y'); // ... Ascending order for y
     }).
     each(function(tile){
 
-      var furthestTile = self.chain().filter(function(othertile){
-        return (othertile.get('y') == tile.get('y')) && (othertile.get('x') > tile.get('x') )
+      var neighborTile = self.chain().filter(function(neighbor){
+        return (neighbor.get('y') == tile.get('y')) && (neighbor.get('x') > tile.get('x') ) // Tiles in the same row that have a higher x than the current tile
       });
 
-      if (furthestTile.value().length == 0 ){
-        tile.set('x',4);
+      if (neighborTile.value().length == 0 ){ // There is no neighbor tiles
+        tile.set('x',size); // Move the tile to the extremity
       }
-      else{
-        var min = furthestTile.min(function(tile){
-          return tile.get('x');
-        }).value().get('x');
-         tile.set('x',min - 1);
+      else{ // There are neighbor(s)
+        var nearestNeighbor = neighborTile.min(function(tile){ return tile.get('x') }).value();
+        if ( nearestNeighbor.get('value') == tile.get('value') ){
+           // Here we make the fusion between the two Tiles
+          nearestNeighbor.set('value',nearestNeighbor.get('value') * 2);
+          tile.destroy();
+
+          // Then we update the score ...
+
+        }
+        else {
+          tile.set('x',nearestNeighbor.get('x') - 1); // Move the tile as close as possible
+        }
 
       }
 
     });
+    this.spawn();
 
   },
 
   moveLeft : function(){
     var self = this;
 
-    // Sort Tiles
+    // Sort Tiles in ...
 
-    this.chain(). // Descending order for x
+    this.chain().
     sortBy(function(tile){
-     return tile.get('x');
+     return tile.get('x'); // ... Ascending order for x
     }).
     sortBy(function(tile){
-      return tile.get('y');
+      return tile.get('y'); // ... Ascending order for y
     }).
     each(function(tile){
 
-      var furthestTile = self.chain().filter(function(othertile){
-        return (othertile.get('y') == tile.get('y')) && (othertile.get('x') < tile.get('x') )
+      var neighborTile = self.chain().filter(function(neighbor){
+        return (neighbor.get('y') == tile.get('y')) && (neighbor.get('x') < tile.get('x') ) // Select tiles in the same row that have a lower x than the current tile
       });
 
-      if (furthestTile.value().length == 0 ){
-        tile.set('x',1);
+      if (neighborTile.value().length == 0 ){ // There is no neighbor tiles
+        tile.set('x',1); // Move the tile to the extremity
       }
-      else{
-        var min = furthestTile.min(function(tile){
-          return tile.get('x');
-        }).value().get('x');
-         tile.set('x',min + 1);
+      else{ // There are neighbor(s)
+        var nearestNeighbor = neighborTile.max(function(tile){ return tile.get('x') }).value();
+        if ( nearestNeighbor.get('value') == tile.get('value') ){
+           // Here we make the fusion between the two Tiles
+          nearestNeighbor.set('value',nearestNeighbor.get('value') * 2);
+          tile.destroy();
+
+          // Then we update the score ...
+
+        }
+        else {
+          tile.set('x',nearestNeighbor.get('x') + 1); // Move the tile as close as possible
+        }
 
       }
 
     });
+    this.spawn();
 
-  }
+  },
 });
 
 var Tile = Backbone.Model.extend({
@@ -216,5 +278,5 @@ var test = new Tile();
 
 var viewgrid = new ViewGrid();
 
-grid.add( [new Tile({x : 1}), new Tile({x : 1, y : 2, value : 4}), new Tile({x : 2, y : 2, value : 8}), new Tile({x : 1, y : 1, value : 8})] ) ;
+grid.add( [new Tile({x : 1}), new Tile({x : 1, y : 2, value : 4}), new Tile({x : 2, y : 2, value : 8}), new Tile({x : 1, y : 1, value : 4})] ) ;
 
