@@ -11,10 +11,10 @@
 
   <meta name="HandheldFriendly" content="True">
   <meta name="MobileOptimized" content="320">
-  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0, maximum-scale=1, user-scalable=no, minimal-ui">
+  <!-- <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0, maximum-scale=1, user-scalable=no, minimal-ui"> -->
 </head>
-<body>
-  <div class="container">
+<body id="game">
+  <div class="container" >
     <div class="heading">
       <h1 class="title">2048</h1>
       <div class="scores-container">
@@ -22,7 +22,6 @@
         <div class="best-container">0</div>
       </div>
     </div>
-    <p class="game-intro">Join the numbers and get to the <strong>2048 tile!</strong></p>
 
     <div class="game-container">
       <div class="game-message">
@@ -60,7 +59,8 @@
         </div>
       </div>
 
-      <div class="tile-container">
+      <div id="grid" class="tile-container">
+
 
       </div>
     </div>
@@ -77,14 +77,15 @@
     Created by <a href="http://gabrielecirulli.com" target="_blank">Gabriele Cirulli.</a> Based on <a href="https://itunes.apple.com/us/app/1024!/id823499224" target="_blank">1024 by Veewo Studio</a> and conceptually similar to <a href="http://asherv.com/threes/" target="_blank">Threes by Asher Vollmer.</a>
     </p>
   </div>
+    <script type="text/template" id="tile-template">
+			<div class="tile tile-<%- value %> tile-position-<%- x %>-<%- y %> tile-new">
+                <div class="tile-inner"><%- value %></div>
+            </div>
 
-  <script src="js/animframe_polyfill.js"></script>
-  <script src="js/keyboard_input_manager.js"></script>
-  <script src="js/html_actuator.js"></script>
-  <script src="js/grid.js"></script>
-  <script src="js/tile.js"></script>
-  <script src="js/local_score_manager.js"></script>
-  <script src="js/game_manager.js"></script>
-  <script src="js/application.js"></script>
+	</script>
+    <script type="text/javascript" src="js/jquery.js"></script>
+    <script type="text/javascript" src="js/underscore.js"></script>
+    <script type="text/javascript" src="js/backbone.js"></script>
+    <script type="text/javascript" src="js/main.js"></script>
 </body>
 </html>
