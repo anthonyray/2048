@@ -96,7 +96,7 @@ var Grid = Backbone.Collection.extend({
           tile.destroy();
 
           // Then we update the score ...
-
+          score.set('value', score.get('value') + nearestNeighbor.get('value'));
         }
         else {
           tile.set('y',nearestNeighbor.get('y') + 1); // Move the tile as close as possible
@@ -137,7 +137,7 @@ var Grid = Backbone.Collection.extend({
           tile.destroy();
 
           // Then we update the score ...
-
+          score.set('value', score.get('value') + nearestNeighbor.get('value'));
         }
         else {
           tile.set('y',nearestNeighbor.get('y') - 1); // Move the tile as close as possible
@@ -180,7 +180,7 @@ var Grid = Backbone.Collection.extend({
           tile.destroy();
 
           // Then we update the score ...
-
+          score.set('value', score.get('value') + nearestNeighbor.get('value'));
         }
         else {
           tile.set('x',nearestNeighbor.get('x') - 1); // Move the tile as close as possible
@@ -222,7 +222,7 @@ var Grid = Backbone.Collection.extend({
           tile.destroy();
 
           // Then we update the score ...
-
+          score.set('value', score.get('value') + nearestNeighbor.get('value'));
         }
         else {
           tile.set('x',nearestNeighbor.get('x') + 1); // Move the tile as close as possible
@@ -263,18 +263,44 @@ var TileView = Backbone.View.extend({
   render: function () {
     this.$el.html(this.template(this.model.toJSON()));
 		return this;
-	}
+	},
+
+  moveTile : function(){
+    this.$el.first().removeClass();
+  }
 
 });
 
+var Score = Backbone.Model.extend({
+  defaults : {
+    "value": 0,
+    "best" : 0
+  }
+});
+
+var ScoreView = Backbone.View.extend({
+  el:'#score',
+
+  template: _.template($('#score-template').html()),
+
+  initialize : function(){
+    this.listenTo(this.model,'change',this.render);
+    this.render();
+  },
+
+  render : function(){
+    this.$el.html(this.template(this.model.toJSON()));
+    return this;
+  }
+});
 
 // Scaffolding
 
 var size = 4;
-
+var score = new Score();
+var scoreview = new ScoreView({model : score});
 var game = new GameView();
 var grid = new Grid();
-var test = new Tile();
 
 var viewgrid = new ViewGrid();
 
