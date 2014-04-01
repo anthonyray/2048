@@ -10,15 +10,14 @@ var GameView = Backbone.View.extend({
   handleKeyPress : function(e){
     e.preventDefault();
     if(e.which == '38'){
-      console.log("UP");
       grid.moveUp();
     }
     else if (e.which == '40')
-      console.log('DOWN');
+      grid.moveDown();
     else if (e.which == '39')
-      console.log('RIGHT');
+      grid.moveRight();
     else if (e.which == '37')
-      console.log('LEFT');
+      grid.moveLeft();
   }
 
 });
@@ -48,10 +47,10 @@ var Grid = Backbone.Collection.extend({
 
     this.chain().
     sortBy(function(tile){
-     return size - tile.get('x');
+     return tile.get('x');
     }).
     sortBy(function(tile){
-      return size - tile.get('y');
+      return tile.get('y');
     }).
     each(function(tile){
 
@@ -59,36 +58,120 @@ var Grid = Backbone.Collection.extend({
         return (othertile.get('x') == tile.get('x')) && (othertile.get('y') < tile.get('y') )
       });
 
-      if (furthestTile.value() == [] ){
+      if (furthestTile.value().length == 0 ){
         tile.set('y',1);
         console.log("ca existe")
       }
       else{
-        var min = furthestTile.min(function(tile){
+        var max = furthestTile.max(function(tile){
           return tile.get('y');
-        }).value();
-         console.log(min);
-
+        }).value().get('y');
+         tile.set('y',max + 1);
 
       }
 
     });
 
+  },
 
-    /*each(function(tile){
-      var y = self.chain().
-                    filter(function(othertile){
-                      return (( othertile.get('x') == tile.get('x') ) && ( othertile.get('y') <= tile.get('y') ));
-                    }).
-                    min(function(othertile){
-                      return ( othertile.get('y'));
-                    }).
-                    value().
-                    get('y');
-      tile.set('y',y);*/
+  moveDown : function(){
+    var self = this;
+
+    // Sort Tiles
+
+    this.chain().
+    sortBy(function(tile){
+     return tile.get('x');
+    }).
+    sortBy(function(tile){
+      return size - tile.get('y');
+    }).
+    each(function(tile){
+
+      var furthestTile = self.chain().filter(function(othertile){
+        return (othertile.get('x') == tile.get('x')) && (othertile.get('y') > tile.get('y') )
+      });
+
+      if (furthestTile.value().length == 0 ){
+        tile.set('y',4);
+      }
+      else{
+        var min = furthestTile.min(function(tile){
+          return tile.get('y');
+        }).value().get('y');
+         tile.set('y',min - 1);
+
+      }
+
+    });
+
+  },
+
+  moveRight : function(){
+    var self = this;
+
+    // Sort Tiles
+
+    this.chain(). // Descending order for x
+    sortBy(function(tile){
+     return size - tile.get('x');
+    }).
+    sortBy(function(tile){
+      return tile.get('y');
+    }).
+    each(function(tile){
+
+      var furthestTile = self.chain().filter(function(othertile){
+        return (othertile.get('y') == tile.get('y')) && (othertile.get('x') > tile.get('x') )
+      });
+
+      if (furthestTile.value().length == 0 ){
+        tile.set('x',4);
+      }
+      else{
+        var min = furthestTile.min(function(tile){
+          return tile.get('x');
+        }).value().get('x');
+         tile.set('x',min - 1);
+
+      }
+
+    });
+
+  },
+
+  moveLeft : function(){
+    var self = this;
+
+    // Sort Tiles
+
+    this.chain(). // Descending order for x
+    sortBy(function(tile){
+     return tile.get('x');
+    }).
+    sortBy(function(tile){
+      return tile.get('y');
+    }).
+    each(function(tile){
+
+      var furthestTile = self.chain().filter(function(othertile){
+        return (othertile.get('y') == tile.get('y')) && (othertile.get('x') < tile.get('x') )
+      });
+
+      if (furthestTile.value().length == 0 ){
+        tile.set('x',1);
+      }
+      else{
+        var min = furthestTile.min(function(tile){
+          return tile.get('x');
+        }).value().get('x');
+         tile.set('x',min + 1);
+
+      }
+
+    });
 
   }
-
 });
 
 var Tile = Backbone.Model.extend({
@@ -133,5 +216,5 @@ var test = new Tile();
 
 var viewgrid = new ViewGrid();
 
-grid.add( [new Tile({x : 1}), new Tile({x : 1, y : 2}), new Tile({x : 3})] ) ;
+grid.add( [new Tile({x : 1}), new Tile({x : 1, y : 2, value : 4}), new Tile({x : 2, y : 2, value : 8}), new Tile({x : 1, y : 1, value : 8})] ) ;
 
