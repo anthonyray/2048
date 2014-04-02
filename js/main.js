@@ -9,9 +9,8 @@ var GameView = Backbone.View.extend({
 
   handleKeyPress : function(e){
     e.preventDefault();
-    if(e.which == '38'){
+    if(e.which == '38')
       grid.moveUp();
-    }
     else if (e.which == '40')
       grid.moveDown();
     else if (e.which == '39')
@@ -244,7 +243,6 @@ var Tile = Backbone.Model.extend({
     "y" : 4
   }
 
-
 });
 
 var TileView = Backbone.View.extend({
@@ -256,7 +254,7 @@ var TileView = Backbone.View.extend({
   template : _.template($('#tile-template').html()),
 
   initialize: function () {
-		this.listenTo(this.model, 'change', this.render);
+		this.listenTo(this.model, 'change', this.moveTile);
 		this.listenTo(this.model, 'destroy', this.remove);
 	},
 
@@ -266,7 +264,8 @@ var TileView = Backbone.View.extend({
 	},
 
   moveTile : function(){
-    this.$el.first().removeClass();
+    this.$el.children().removeClass().addClass('tile tile-'+this.model.get('value')+' tile-position-'+this.model.get('x')+'-'+this.model.get('y')+' tile-new');
+    this.$el.find('.tile-inner').text(this.model.get('value'));
   }
 
 });
@@ -276,6 +275,7 @@ var Score = Backbone.Model.extend({
     "value": 0,
     "best" : 0
   }
+
 });
 
 var ScoreView = Backbone.View.extend({
@@ -292,6 +292,7 @@ var ScoreView = Backbone.View.extend({
     this.$el.html(this.template(this.model.toJSON()));
     return this;
   }
+
 });
 
 // Scaffolding
