@@ -8,7 +8,7 @@ var GameView = Backbone.View.extend({
   },
 
   handleKeyPress : function(e){
-    e.preventDefault();
+    
     if(e.which == '38')
       grid.moveUp();
     else if (e.which == '40')
@@ -233,6 +233,7 @@ var Grid = Backbone.Collection.extend({
     this.spawn();
 
   },
+
 });
 
 var Tile = Backbone.Model.extend({
@@ -254,7 +255,8 @@ var TileView = Backbone.View.extend({
   template : _.template($('#tile-template').html()),
 
   initialize: function () {
-		this.listenTo(this.model, 'change', this.moveTile);
+		this.listenTo(this.model,'change:value',this.render);
+    this.listenTo(this.model, 'change', this.moveTile);
 		this.listenTo(this.model, 'destroy', this.remove);
 	},
 
