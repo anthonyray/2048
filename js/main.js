@@ -4,10 +4,11 @@ var GameView = Backbone.View.extend({
   el : '#game',
 
   events : {
-    'keyup'  : 'handleKeyPress'
+    'keydown'  : 'handleKeyPress'
   },
 
   handleKeyPress : function(e){
+    e.preventDefault();
     
     if(e.which == '38')
       grid.moveUp();
@@ -91,8 +92,9 @@ var Grid = Backbone.Collection.extend({
         var nearestNeighbor = neighborTile.max(function(tile){ return tile.get('y') }).value();
         if ( nearestNeighbor.get('value') == tile.get('value') ){
            // Here we make the fusion between the two Tiles
+          tile.set('y',nearestNeighbor.get('y'));
           nearestNeighbor.set('value',nearestNeighbor.get('value') * 2);
-          //tile.set('y',nearestNeighbor.get('y'));
+          
           tile.destroy();
 
           // Then we update the score ...
@@ -133,6 +135,7 @@ var Grid = Backbone.Collection.extend({
         var nearestNeighbor = neighborTile.min(function(tile){ return tile.get('y') }).value();
         if ( nearestNeighbor.get('value') == tile.get('value') ){
            // Here we make the fusion between the two Tiles
+          tile.set('y',nearestNeighbor.get('y'));
           nearestNeighbor.set('value',nearestNeighbor.get('value') * 2);
           tile.destroy();
 
@@ -176,6 +179,7 @@ var Grid = Backbone.Collection.extend({
         var nearestNeighbor = neighborTile.min(function(tile){ return tile.get('x') }).value();
         if ( nearestNeighbor.get('value') == tile.get('value') ){
            // Here we make the fusion between the two Tiles
+          tile.set('x',nearestNeighbor.get('x'));
           nearestNeighbor.set('value',nearestNeighbor.get('value') * 2);
           tile.destroy();
 
@@ -218,6 +222,7 @@ var Grid = Backbone.Collection.extend({
         var nearestNeighbor = neighborTile.max(function(tile){ return tile.get('x') }).value();
         if ( nearestNeighbor.get('value') == tile.get('value') ){
            // Here we make the fusion between the two Tiles
+          tile.set('x',nearestNeighbor.get('x'));
           nearestNeighbor.set('value',nearestNeighbor.get('value') * 2);
           tile.destroy();
 
@@ -298,15 +303,15 @@ var ScoreView = Backbone.View.extend({
 
 });
 
-// Scaffolding
+// Setup
 
-var size = 4;
-var score = new Score();
+var size = 4; // Size of the grid
+var score = new Score(); // New score model 
 var scoreview = new ScoreView({model : score});
 var game = new GameView();
 var grid = new Grid();
-
 var viewgrid = new ViewGrid();
 
-grid.add( [new Tile({x : 1}), new Tile({x : 1, y : 2, value : 4}), new Tile({x : 2, y : 2, value : 8}), new Tile({x : 1, y : 1, value : 4})] ) ;
+// Setup initial blocks
 
+grid.add( [new Tile({x : 1}), new Tile({x : 1, y : 2, value : 4}), new Tile({x : 2, y : 2, value : 8}), new Tile({x : 1, y : 1, value : 4})] ) ;
