@@ -92,6 +92,7 @@ var Grid = Backbone.Collection.extend({
         if ( nearestNeighbor.get('value') == tile.get('value') ){
            // Here we make the fusion between the two Tiles
           nearestNeighbor.set('value',nearestNeighbor.get('value') * 2);
+          //tile.set('y',nearestNeighbor.get('y'));
           tile.destroy();
 
           // Then we update the score ...
